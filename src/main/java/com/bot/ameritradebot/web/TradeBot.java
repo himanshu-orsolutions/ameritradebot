@@ -81,18 +81,33 @@ public class TradeBot {
 						.append("timestamp", convertToMillis(streamerInfo.getString("tokenTimestamp")))
 						.append("appid", streamerInfo.get("appId")).append("acl", streamerInfo.get("acl"));
 
-				Document request = new Document().append("requests", Arrays.asList(
-						new Document().append("service", "ADMIN").append("command", "LOGIN").append("requestid", 0)
-								.append("account", account.get("accountId")).append("source", streamerInfo.get("appId"))
-								.append("parameters",
-										new Document().append("credential", prepareQueryString(credentials))
-												.append("token", streamerInfo.get("token")).append("version", "1.0")),
-						new Document().append("service", "CHART_EQUITY").append("requestid", 1)
-								.append("command", "SUBS").append("account", account.get("accountId"))
-								.append("source", streamerInfo.get("appId")).append("parameters",
-										new Document().append("keys", "AAPL").append("fields", "0,1,2,3,4,5,6,7,8"))));
-
-				TradebotEndpoint.requestBody = request.toJson();
+				TradebotEndpoint.requests = Arrays.asList(
+						new Document()
+								.append("requests",
+										Arrays.asList(
+												new Document().append("service", "ADMIN").append("command", "LOGIN")
+														.append("requestid", 0)
+														.append("account",
+																account.get("accountId"))
+														.append("source", streamerInfo.get("appId"))
+														.append("parameters", new Document()
+																.append("credential", prepareQueryString(credentials))
+																.append("token", streamerInfo.get("token"))
+																.append("version", "1.0"))))
+								.toJson(),
+						new Document().append("requests",
+								Arrays.asList(new Document().append("service", "ADMIN").append("command", "QOS")
+										.append("requestid", 2).append("account", account.get("accountId"))
+										.append("source", streamerInfo.get("appId"))
+										.append("parameters", new Document().append("qoslevel", 0))))
+								.toJson(),
+						new Document()
+								.append("requests", Arrays.asList(new Document().append("service", "CHART_EQUITY")
+										.append("requestid", 1).append("command", "SUBS")
+										.append("account", account.get("accountId"))
+										.append("source", streamerInfo.get("appId")).append("parameters", new Document()
+												.append("keys", "AAPL").append("fields", "0,1,2,3,4,5,6,7,8"))))
+								.toJson());
 				WebSocketContainer container = ContainerProvider.getWebSocketContainer();
 				container.connectToServer(TradebotEndpoint.class,
 						URI.create(StringUtils.join("wss://", streamerInfo.getString("streamerSocketUrl"), "/ws")));

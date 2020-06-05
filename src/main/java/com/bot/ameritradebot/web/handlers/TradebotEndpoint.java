@@ -1,6 +1,7 @@
 package com.bot.ameritradebot.web.handlers;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,7 +15,7 @@ import javax.websocket.Session;
 @ClientEndpoint
 public class TradebotEndpoint {
 
-	public static String requestBody;
+	public static List<String> requests;
 
 	Logger logger = Logger.getLogger("TradebotEndpoint");
 
@@ -23,7 +24,9 @@ public class TradebotEndpoint {
 
 		logger.log(Level.INFO, "Connected to web socket.");
 		try {
-			session.getBasicRemote().sendText(requestBody);
+			for (String request : requests) {
+				session.getBasicRemote().sendText(request);
+			}
 		} catch (IOException ioException) {
 			logger.log(Level.SEVERE, "Error sending request to the web socket.");
 		}
