@@ -93,13 +93,7 @@ public class TradeBot {
 														.append("parameters", new Document()
 																.append("credential", prepareQueryString(credentials))
 																.append("token", streamerInfo.get("token"))
-																.append("version", "1.0"))))
-								.toJson(),
-						new Document().append("requests",
-								Arrays.asList(new Document().append("service", "ADMIN").append("command", "QOS")
-										.append("requestid", 2).append("account", account.get("accountId"))
-										.append("source", streamerInfo.get("appId"))
-										.append("parameters", new Document().append("qoslevel", 0))))
+																.append("version", "1.0").append("qoslevel", 0))))
 								.toJson(),
 						new Document()
 								.append("requests", Arrays.asList(new Document().append("service", "CHART_EQUITY")
